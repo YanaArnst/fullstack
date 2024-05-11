@@ -1,0 +1,182 @@
+//create a user 
+POST http://localhost:4000/users 
+Content-Type: application/json
+
+{
+"name": "Denis", 
+"email": "denis@gmail.com", 
+"password": "123456", 
+"confPassword": "123456", 
+"role": "user"
+
+}
+
+### 
+//get All Users 
+GET http://localhost:4000/users
+
+
+
+###
+//get Single User 
+GET http://localhost:4000/users/1
+
+###
+//update a user 
+PATCH http://localhost:4000/users/1
+Content-Type: application/json
+
+{
+"name": "Yana", 
+"email": "admin@gmail.com", 
+"password": "", 
+"confPassword": "", 
+"role": "admin"
+
+}
+
+### 
+//delete a user 
+DELETE http://localhost:4000/users/1
+
+### 
+//login user 
+POST http://localhost:4000/login 
+Content-Type: application/json
+
+{
+"email": "admin@gmail.com", 
+"password": "123456"
+
+}
+
+### 
+GET http://localhost:4000/me
+
+### 
+DELETE http://localhost:4000/logout
+
+
+### 
+//get all tools 
+GET http://localhost:4000/tools
+
+### 
+//get single tool 
+GET http://localhost:4000/tools/2
+
+### 
+//Post data tool 
+POST http://localhost:4000/tools 
+Content-Type: application/json
+
+{
+"name": "Дрель", 
+"price": 4000, 
+"deposit": 2000, 
+"costPerDay": 1000, 
+"description": "Мощность 700ВТ"
+
+}
+
+### 
+//Post data tool 
+PATCH http://localhost:4000/tools/2
+Content-Type: application/json
+
+{
+"name": "Дрель", 
+"price": 4000, 
+"deposit": 2500, 
+"costPerDay": 1000, 
+"description": "Мощность 500ВТ"
+
+}
+
+### 
+DELETE http://localhost:4000/tools/3
+
+
+
+### 
+//get all clients 
+GET http://localhost:4000/clients
+
+### 
+//Post data client 
+POST http://localhost:4000/clients 
+Content-Type: application/json
+
+{
+"surname": "Иванов", 
+"name": "Иван", 
+"patronomic": "Иванович", 
+"adress": "Зеленодольск, Ленина 35, 12", 
+"phone": 89173456780, 
+"passport": 9823456517
+
+}
+
+### 
+//get single client 
+GET http://localhost:4000/clients/1
+
+### 
+//Post data client 
+PATCH http://localhost:4000/clients/1
+Content-Type: application/json
+
+{
+"surname": "Иванов", 
+"name": "Иван", 
+"patronomic": "Иванович", 
+"adress": "Зеленодольск, Ленина 35, 1", 
+"phone": 89173456781, 
+"passport": 9823456517
+
+}
+
+### 
+DELETE http://localhost:4000/clients/1
+
+
+### 
+//get all orders 
+GET http://localhost:4000/orders
+
+### 
+//get single order 
+GET http://localhost:4000/orders/1
+
+### 
+//Post data order 
+POST http://localhost:4000/orders 
+Content-Type: application/json
+
+{
+"clientId": 1, 
+"toolId": 1, 
+"dateIssue": "2024-04-01", 
+"amountDay": 3, 
+"overdueDay": 1, 
+"status" : true
+
+}
+
+### 
+//Post data order 
+PATCH http://localhost:4000/orders/1 
+Content-Type: application/json
+
+{
+"clientId": 1, 
+"toolId": 3, 
+"dateIssue": "2024-04-11", 
+"amountDay": 3, 
+"overdueDay": 1, 
+"status" : 1
+
+}
+
+### 
+DELETE http://localhost:4000/orders/2
