@@ -6,23 +6,50 @@ import { useSelector } from "react-redux";
 const OrderList = () => {
 
   const [orders, setOrders] = useState ([]);
+  const [filterStatus, setFilterStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [ordersPerPage] = useState(10);
   const { user } = useSelector((state) => state.auth);
 
   useEffect(() =>{
-    getOrders();
-  }, []);
+    fetchOrders();
+  }, [filterStatus]);
 
-  const getOrders = async () => {
-    const response = await axios.get("http://localhost:4000/orders");
-    setOrders(response.data);
+  
+  const fetchOrders = async () => {
+    try {
+      let url = 'http://localhost:4000/orders';
+      if (filterStatus !== 'all') {
+        url += `?status=${filterStatus === 'active' ? true : false}`; // Добавляем параметры фильтрации в URL
+      }
+      const response = await axios.get(url);
+      setOrders(response.data);
+    } catch (error) {
+      console.error('Ошибка при получении заказов:', error);
+    }
   };
+
+  const handleFilterChange = (e) => {
+    setFilterStatus(e.target.value);
+  };
+
+  const filteredOrders = orders.filter((order) => {
+    if (filterStatus === 'all') {
+      return true; // Показываем все заказы
+    } else if (filterStatus === 'active') {
+      return order.status; // Показываем активные заказы (status === true)
+    } else if (filterStatus === 'completed') {
+      return !order.status; // Показываем завершенные заказы (status === false)
+    }
+    return true; // По умолчанию показываем все заказы
+  });
+
+
 
   const deleteOrder = async (orderId) => {
     
     await axios.delete(`http://localhost:4000/clients/${orderId}`);
-    getOrders();
+    fetchOrders();
   };
 
   const indexOfLastOrder = currentPage * ordersPerPage;
@@ -46,6 +73,17 @@ const OrderList = () => {
       <Link to="/orders/add" className="button is-primary mb-3">
         Добавить
       </Link>
+      
+      
+
+      <div className="buttons">
+        <button type="button" className="button is-small is-danger" onClick={handleFilterChange} value="all">Все</button>
+        <button type="button" className="button is-small is-danger" onClick={handleFilterChange} value="active">Активные</button>
+        <button type="button" className="button is-small is-danger" onClick={handleFilterChange} value="completed">Завершенные</button>
+      </div>
+
+
+
     <table className="table is-striped is-fullwidth">
     <thead>
       <tr>
@@ -64,7 +102,7 @@ const OrderList = () => {
       </tr>
     </thead>
     <tbody>
-    {paginatedOrders.map((order,index) => (
+    {filteredOrders.map((order,index) => (
         <tr key={order.id}>
         <td>{indexOfFirstOrder + index + 1}</td>
         <td>{order.client ? `${order.client.surname} ${order.client.name} ${order.client.patronomic}` : 'Неизвестный клиент'}</td>
@@ -107,17 +145,18 @@ const OrderList = () => {
         </tbody>
       </table>
 
-      <nav className="pagination" role="navigation" aria-label="pagination">
-        <ul className="pagination-list">
-          {pageNumbers.map(number => (
-            <li key={number}>
-              <a onClick={() => handleChangePage(number)} className={`pagination-link ${currentPage === number ? 'is-current' : ''}`}>
-                {number}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
+        <div>
+          {/* Кнопки переключения страниц */}
+          <ul className="pagination">
+            {pageNumbers.map((number) => (
+              <li key={number} className="page-item">
+                <button onClick={() => handleChangePage(number)} className="page-link">
+                  {number}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
 
     </div>
   )

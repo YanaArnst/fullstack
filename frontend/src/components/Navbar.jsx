@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../logo.png";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,11 +8,18 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const logout = () => {
     dispatch(LogOut());
     dispatch(reset());
     navigate("/");
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    navigate(`/search?query=${searchQuery}`);
+    setSearchQuery(''); // Очищаем поле поиска после перехода
   };
     
 return (
@@ -48,6 +55,28 @@ return (
           </div>
         
           <div id="navbarBasicExample" className="navbar-menu">
+          <div className="navbar-start">
+          <div className="navbar-item" style={{ marginLeft: '100px' }}>
+              <form className="field has-addons" onSubmit={handleSearch}>
+                <div className="control">
+                  <input
+                    className="input"
+                    type="text"
+                    placeholder="Поиск"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <div className="control">
+                  <button type="submit" className="button is-info">
+                    Найти
+                  </button>
+                </div>
+                </form>
+              </div>
+          </div>
+
+
             <div className="navbar-end">
               <div className="navbar-item">
                 <div className="buttons">

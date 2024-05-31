@@ -8,6 +8,8 @@ const FormAddOrder = () => {
     const [clientId, setClientId] = useState("");
     const [tools, setTools] = useState([]);
     const [toolId, setToolId] = useState("");
+    const [orders, setOrders] = useState([]);
+    const [usedTools, setUsedTools] = useState([]);
     const [dateIssue, setDateIssue] = useState("");
     const [deposit, setDeposit] = useState(0); 
     const [amountDay, setAmountDay] = useState(0);
@@ -88,6 +90,43 @@ const FormAddOrder = () => {
         }
       };
 
+
+      useEffect(() => {
+        const fetchOrders = async () => {
+          try {
+            const response = await axios.get('http://localhost:4000/orders');
+            setOrders(response.data);
+          } catch (error) {
+            if (error.response) {
+              setMsg(error.response.data.msg);
+            }
+          }
+        };
+    
+        fetchOrders();
+      }, []);
+    
+      useEffect(() => {
+        const fetchUsedTools = async () => {
+          try {
+            // Фильтруем заказы по статусу и получаем список используемых инструментов
+            const activeOrders = orders.filter(order => order.status);
+            const toolIds = activeOrders.map(order => order.toolId);
+            setUsedTools(toolIds);
+          } catch (error) {
+            if (error.response) {
+              setMsg(error.response.data.msg);
+            }
+          }
+        };
+    
+        if (orders.length > 0) {
+          fetchUsedTools();
+        }
+      }, [orders]);
+
+
+
   return (
     <div>
         <h1 className='title'>Заказы</h1>
@@ -98,6 +137,8 @@ const FormAddOrder = () => {
                 <form onSubmit={saveOrder}>
                     <p className="has-text-centered">{msg}</p>
 
+                    <div className="field">
+                    <label className="label">Клиент</label>
                     <div className="control">
                         <select
                         className="input" 
@@ -109,6 +150,7 @@ const FormAddOrder = () => {
                         ))}
                       </select>
                     </div>
+                    </div>
 
                     <div className="field">
                     <label className="label">Инструмент</label>
@@ -118,9 +160,11 @@ const FormAddOrder = () => {
                         value={toolId}
                         onChange={(e) => setToolId(e.target.value)}>
                           <option value="">Выберите инструмент</option>
-                        {tools.map((tool) => (
-                          <option key={tool.id} value={tool.id}>{`${tool.name}`}</option>
-                        ))}
+                          {tools
+                            .filter(tool => !usedTools.includes(tool.id))
+                            .map((tool) => (
+                              <option key={tool.id} value={tool.id}>{`${tool.name}`}</option>
+                            ))}
                       </select>
                     </div>
                 </div>
@@ -172,7 +216,7 @@ const FormAddOrder = () => {
                     <div className="select">
                     <select
                       value={status ? 'active' : 'completed'} 
-                      onChange={(e) => setStatus(e.target.value === 'active')} // Преобразование строки в булево значение при изменении
+                      onChange={(e) => setStatus(e.target.value === 'active')} 
                     >
                       <option value="completed">Завершенный</option>
                       <option value="active">Активный</option>

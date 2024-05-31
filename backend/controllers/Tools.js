@@ -1,6 +1,5 @@
 import Tool from "../models/ToolModel.js";
 import User from "../models/UserModel.js";
-import {Op} from "sequelize";
 
 export const getTools = async (req, res) => {
         try {

@@ -7,7 +7,7 @@ Content-Type: application/json
 "email": "denis@gmail.com", 
 "password": "123456", 
 "confPassword": "123456", 
-"role": "user"
+"role": "admin"
 
 }
 
@@ -159,7 +159,7 @@ Content-Type: application/json
 "dateIssue": "2024-04-01", 
 "amountDay": 3, 
 "overdueDay": 1, 
-"status" : true
+"status" : false
 
 }
 
@@ -170,13 +170,16 @@ Content-Type: application/json
 
 {
 "clientId": 1, 
-"toolId": 3, 
+"toolId": 1, 
 "dateIssue": "2024-04-11", 
 "amountDay": 3, 
 "overdueDay": 1, 
-"status" : 1
+"status" : 0
 
 }
 
 ### 
 DELETE http://localhost:4000/orders/2
+
+###
+GET http://localhost:4000/search/search?query=Илья

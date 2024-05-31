@@ -5,7 +5,7 @@ const {DataTypes} = Sequelize;
 
 const Users = db.define('users',{
     name:{
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(20),
         allowNull: false,
         validate:{
             notEmpty: true,
@@ -13,7 +13,7 @@ const Users = db.define('users',{
         }
     },
     email:{
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(30),
         allowNull: false,
         validate:{
             notEmpty: true,
@@ -21,14 +21,14 @@ const Users = db.define('users',{
         }
     },
     password:{
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(30),
         allowNull: false,
         validate:{
             notEmpty: true
         }
     },
     role:{
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(20),
         allowNull: false,
         validate:{
             notEmpty: true

@@ -6,7 +6,7 @@ const {DataTypes} = Sequelize;
 
 const Clients = db.define('client',{
     surname:{
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(20),
         allowNull: false,
         validate:{
             notEmpty: true,
@@ -15,7 +15,7 @@ const Clients = db.define('client',{
     },
 
     name:{
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(20),
         allowNull: false,
         validate:{
             notEmpty: true,
@@ -24,7 +24,7 @@ const Clients = db.define('client',{
     },
 
     patronomic:{
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(30),
         allowNull: false,
         validate:{
             notEmpty: true,
@@ -33,7 +33,7 @@ const Clients = db.define('client',{
     },
 
     adress:{
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100),
         allowNull: false,
         validate:{
             notEmpty: true,
@@ -42,7 +42,7 @@ const Clients = db.define('client',{
     },
 
     phone:{
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(11),
         allowNull: false,
         validate:{
             notEmpty: true,
@@ -51,7 +51,7 @@ const Clients = db.define('client',{
     },
 
     passport:{
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(12),
         allowNull: false,
         validate:{
             notEmpty: true,

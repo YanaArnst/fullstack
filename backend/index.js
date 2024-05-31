@@ -9,6 +9,7 @@ import ToolRoute from "./routes/ToolRoute.js"
 import ClientRoute from "./routes/ClientRoute.js"
 import OrderRoute from "./routes/OrderRoute.js"
 import AuthRoute from "./routes/AuthRoute.js";
+import SearchRoute from "./routes/SearchRoute.js"
 dotenv.config();
 
 const app = express();
@@ -44,6 +45,7 @@ app.use(ToolRoute);
 app.use(ClientRoute);
 app.use(OrderRoute);
 app.use(AuthRoute);
+app.use(SearchRoute);
 
 store.sync();
 

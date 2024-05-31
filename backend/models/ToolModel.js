@@ -6,7 +6,7 @@ const {DataTypes} = Sequelize;
 
 const Tools = db.define('tool',{
     name:{
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(50),
         allowNull: false,
         validate:{
             notEmpty: true,
@@ -38,7 +38,7 @@ const Tools = db.define('tool',{
     },
 
     description:{
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(200),
         allowNull: true,
     },
 

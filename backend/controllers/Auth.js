@@ -5,7 +5,7 @@ import argon2 from "argon2";
 export const Login = async(req, res) => {
     const user = await User.findOne({
         where: {
-            email: req.body.email //вход по электронной почте
+            email: req.body.email 
         }
     });
     if(!user) return res.status(404).json({msg: "Пользователь не найден"}); //ошибка пользователь не найден если нет email
