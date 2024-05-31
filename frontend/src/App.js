@@ -13,7 +13,7 @@ import AddClient from "./pages/AddClient.jsx";
 import EditClient from "./pages/EditClient.jsx";
 import AddOrder from "./pages/AddOrder.jsx";
 import EditOrder from "./pages/EditOrder.jsx";
-import Search from "./pages/Search.jsx"
+import Search from "./pages/Search.jsx";
 
 function App() {
   return (
@@ -40,6 +40,7 @@ function App() {
       <Route path="/orders/edit/:id" element={<EditOrder/>} />
 
       <Route path="/search" element={<Search/>} />
+
      </Routes>
      </BrowserRouter>
     </div>

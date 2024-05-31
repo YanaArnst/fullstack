@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import fileDownload from "js-file-download";
 
 const OrderList = () => {
 
@@ -48,7 +49,7 @@ const OrderList = () => {
 
   const deleteOrder = async (orderId) => {
     
-    await axios.delete(`http://localhost:4000/clients/${orderId}`);
+    await axios.delete(`http://localhost:4000/orders/${orderId}`);
     fetchOrders();
   };
 
@@ -64,6 +65,19 @@ const OrderList = () => {
   for (let i = 1; i <= Math.ceil(orders.length / ordersPerPage); i++) {
     pageNumbers.push(i);
   }
+
+  const downloadRentalTemplate = async (orderId) => {
+    try {
+      // Отправляем запрос на сервер для генерации документа
+      const response = await axios.get(`http://localhost:4000/orders/${orderId}/rental-template`, {
+        responseType: 'blob', // Указываем, что мы ожидаем получить бинарные данные
+      });
+      fileDownload(response.data, 'rental_template.docx'); // Скачиваем файл
+  } catch (error) {
+    console.error('Ошибка при скачивании договора аренды:', error);
+  }
+};
+
 
 
   return (
@@ -98,7 +112,9 @@ const OrderList = () => {
         <th>Итого</th>
         <th>Статус</th>
         <th>Создан</th>
-        <th>Действия</th>
+        <th style={{ textAlign: 'center' }}>Действия</th>
+        <th ></th>
+        <th ></th>
       </tr>
     </thead>
     <tbody>
@@ -128,13 +144,25 @@ const OrderList = () => {
               Редактировать
             </Link>
           </td>
+          
+          <td>
+            <button
+             onClick={() => downloadRentalTemplate(order.id)}
+            className="button is-small is-link"
+              style={{ marginLeft: "-80px" }}
+            >
+              Скачать
+            </button>
+          </td>  
+
+
 
         {user && user.role === "admin" && (
         <td>
             <button
               onClick={() => deleteOrder(order.id)}
               className="button is-small is-danger"
-              style={{ marginLeft: "-80px" }}
+              style={{ marginLeft: "-25px" }}
             >
               Удалить
             </button>
@@ -144,19 +172,6 @@ const OrderList = () => {
       ))}
         </tbody>
       </table>
-
-        <div>
-          {/* Кнопки переключения страниц */}
-          <ul className="pagination">
-            {pageNumbers.map((number) => (
-              <li key={number} className="page-item">
-                <button onClick={() => handleChangePage(number)} className="page-link">
-                  {number}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
 
     </div>
   )

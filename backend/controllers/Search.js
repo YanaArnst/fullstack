@@ -12,13 +12,14 @@ export const getSearch = async (req, res) => {
     const results = await Clients.findAll({
       where: {
         [Op.or]: [
-          { name: { [Op.like]: `%${query}%` } },
+          { Surname: { [Op.like]: `%${query}%` } },
+          { Name: { [Op.like]: `%${query}%` } }
         ],
       },
       attributes: ['name', 'surname', 'patronomic'],
       include: [{
         model: Orders,
-        as: 'orders', // Используйте псевдоним, если вы его определили
+        as: 'orders', 
         required: false, // Если у клиента нет заказов, он все равно будет включен в результаты
       }],
     });
