@@ -46,13 +46,6 @@ const OrderList = () => {
   });
 
 
-
-  const deleteOrder = async (orderId) => {
-    
-    await axios.delete(`http://localhost:4000/orders/${orderId}`);
-    fetchOrders();
-  };
-
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
   const paginatedOrders = orders.slice(indexOfFirstOrder, indexOfLastOrder);
@@ -66,18 +59,33 @@ const OrderList = () => {
     pageNumbers.push(i);
   }
 
-  const downloadRentalTemplate = async (orderId) => {
+
+  
+  const downloadRentalTemplate = async (id) => {
     try {
-      // Отправляем запрос на сервер для генерации документа
-      const response = await axios.get(`http://localhost:4000/orders/${orderId}/rental-template`, {
-        responseType: 'blob', // Указываем, что мы ожидаем получить бинарные данные
+      const response = await axios.get(`http://localhost:4000/orders/${id}/client-surname`);
+      const { surname } = response.data;
+      const encodedFilename = `Договор_аренды_${encodeURIComponent(surname)}.docx`;
+      const decodedFilename = decodeURIComponent(encodedFilename);
+
+
+      const fileResponse = await axios.get(`http://localhost:4000/orders/${id}/rental-template`, {
+          responseType: 'blob',
       });
-      fileDownload(response.data, 'rental_template.docx'); // Скачиваем файл
+
+      fileDownload(fileResponse.data, decodedFilename);
   } catch (error) {
-    console.error('Ошибка при скачивании договора аренды:', error);
+      console.error('Ошибка при скачивании договора аренды:', error);
   }
 };
 
+
+
+  const deleteOrder = async (id) => {
+      
+    await axios.delete(`http://localhost:4000/orders/${id}`);
+    fetchOrders();
+  };
 
 
   return (

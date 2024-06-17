@@ -3,8 +3,11 @@ import Tool from "../models/ToolModel.js";
 import Client from "../models/ClientModel.js";
 import User from "../models/UserModel.js";
 import fs from "fs";
+import path  from "path";
+import officegen from "officegen";
 import Docxtemplater from 'docxtemplater';
 import {Op} from "sequelize";
+import { createDocument } from "./createDocument.js";
 
 
 export const getOrders = async (req, res) => {
@@ -145,17 +148,44 @@ export const updateOrder = async (req, res) => {
 }
 
 
-export const getRentalTemplate = async (req, res) => {
+
+export const getClientSurname = async (req, res) => {
     try {
-        const orderId = req.params.orderId;
-        
-        // Получаем данные о заказе
         const order = await Order.findOne({
             where: {
-                id: orderId
+                id: req.params.id
             },
             include: [{
                 model: Client,
+                required: true,
+                attributes: ['surname']
+            }]
+        });
+
+        if (!order) {
+            return res.status(404).json({ msg: "Заказ не найден" });
+        }
+
+        const surname = order.client.surname;
+        res.json({ surname });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+
+export const getRentalTemplate = async (req, res) => {
+    try {
+        
+        const order = await Order.findOne({
+            where:{
+                id: req.params.id
+            },
+            include: [{
+                model: Client,
+                required: true, // Убедитесь, что клиент должен быть включен
                 attributes: ['surname', 'name', 'patronomic']
             },
             {
@@ -165,56 +195,41 @@ export const getRentalTemplate = async (req, res) => {
         });
 
         if (!order) {
-            return res.status(404).json({ message: 'Заказ не найден' });
-        }
+            return res.status(404).json({ msg: "Заказ не найден" });
+          }
+        
 
-      // Читаем шаблон аренды из файла
-      let templatePath = 'rental_template.docx'; // Путь к файлу шаблона аренды
-      let template;
-        try {
-            template = fs.readFileSync(templatePath);
-        } catch (err) {
-            console.error("Ошибка при чтении файла шаблона аренды:", err);
-            return res.status(500).json({ message: 'Ошибка при чтении файла шаблона аренды' });
-        }
+    const docx = createDocument(order);
 
-      // Заменяем заполнители в шаблоне аренды на данные о заказе
-      let rentalAgreement = fillRentalTemplate(template, order);
+          
+   // Сохраняем документ в файл
+    const filename = `Договор_аренды_${order.client.surname}.docx`;
+    const outputStream = fs.createWriteStream(filename);
+    docx.generate(outputStream);
 
-      // Отправляем файл обратно на фронтенд
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      res.setHeader('Content-Disposition', 'attachment; filename=rental_agreement.docx');
-      res.send(rentalAgreement);
-  } catch (error) {
-      res.status(500).json({ msg: error.message });
-  }
-};
-export const fillRentalTemplate = (template, order) => {
-    // Инициализируем docxtemplater с содержимым шаблона
-    const doc = new Docxtemplater();
-    doc.loadZip(template);
 
-    // Проверяем наличие данных заказа и клиента
-    if (!order || !order.client || !order.tool) {
-        console.error("Данные заказа некорректны или отсутствуют.");
-        return null; // Вернуть null, чтобы показать, что данные заказа некорректны
-    }
-
-    // Заменяем заполнители в шаблоне на данные о заказе
-    doc.setData({
-        clientName: `${order.client.surname} ${order.client.name} ${order.client.patronomic}`,
-        toolName: order.tool.name,
-        // Другие данные заказа, если нужно
+    // Отправляем .docx файл клиенту
+    outputStream.on('finish', () => {
+        res.setHeader('Content-Disposition', `attachment; filename=${encodeURIComponent(filename)}`);
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');    
+        const fileStream = fs.createReadStream(filename);
+        fileStream.pipe(res);
+        fileStream.on('end', () => {
+        fs.unlinkSync(filename); // Удаляем файл после отправки
+        });
     });
 
-    // Рендерим шаблон
-    doc.render();
+    // Обработка ошибок при создании документа
+    outputStream.on('error', (err) => {
+    res.status(500).json({ message: err.message });
+    });
 
-    // Получаем бинарные данные отрендеренного документа
-    const buffer = doc.getZip().generate({ type: 'nodebuffer' });
+    } catch (error) {
+    // Обрабатываем ошибки, которые могут возникнуть в блоке try
+    res.status(500).json({ message: error.message });
+    }
+    };
 
-    return buffer;
-};
 
 
 
